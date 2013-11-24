@@ -3,8 +3,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 
@@ -34,7 +33,13 @@ public class PatternRecognitionFrame extends JFrame {
 	private JButton emptyTableButton;
 	private JPanel optionsPanel;
 	private JButton addButton;
+	private JTextArea addTextArea;
 	private JTextField addTextField;
+	private JTextField hiddenLayerField;
+	private JTextField learningRateField;
+	private JTextField momentumField;
+	private JTextField errorToleranceField;
+
 	
 	public PatternRecognitionFrame(int width, int height) {
 		WIDTH = width;
@@ -103,14 +108,21 @@ public class PatternRecognitionFrame extends JFrame {
 		});
 		addButton.setPreferredSize(new Dimension(WIDTH/3,buttonHeight));
 		optionsPanel.add(addButton);
-		addTextField = new JTextField("Pattern...");
+		addTextField = new JTextField();
 		addTextField.setPreferredSize(new Dimension(2*WIDTH/3,buttonHeight));
-		addTextField.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				addTextField.setText("");
-			}
-		});
 		optionsPanel.add(addTextField);
+		hiddenLayerField = new JTextField();
+		hiddenLayerField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		optionsPanel.add(hiddenLayerField);
+		learningRateField = new JTextField();
+		learningRateField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		optionsPanel.add(learningRateField);
+		momentumField = new JTextField();
+		momentumField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		optionsPanel.add(momentumField);
+		errorToleranceField = new JTextField();
+		errorToleranceField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		optionsPanel.add(errorToleranceField);
 		
 		framePanel.add(optionsPanel);
 		
