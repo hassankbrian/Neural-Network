@@ -11,7 +11,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
+import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 
@@ -33,11 +33,16 @@ public class PatternRecognitionFrame extends JFrame {
 	private JButton emptyTableButton;
 	private JPanel optionsPanel;
 	private JButton addButton;
-	private JTextArea addTextArea;
+	private JLabel addLabel;
 	private JTextField addTextField;
+	private JPanel addPanel;
+	private JLabel hiddenLayerLabel;
 	private JTextField hiddenLayerField;
+	private JLabel learningRateLabel;
 	private JTextField learningRateField;
+	private JLabel momentumLabel;
 	private JTextField momentumField;
+	private JLabel errorToleranceLabel;
 	private JTextField errorToleranceField;
 
 	
@@ -66,6 +71,7 @@ public class PatternRecognitionFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				viewPort.removeAll();
 				viewPort.revalidate();
+				viewPort.repaint();
 			}
 		});
 		emptyTableButton.setPreferredSize(new Dimension(width/3,buttonHeight));
@@ -108,20 +114,38 @@ public class PatternRecognitionFrame extends JFrame {
 		});
 		addButton.setPreferredSize(new Dimension(WIDTH/3,buttonHeight));
 		optionsPanel.add(addButton);
+		addPanel = new JPanel();
+		addPanel.setPreferredSize(new Dimension(2*WIDTH/3,buttonHeight));
+		addLabel = new JLabel("Pattern ID:");
+		addLabel.setPreferredSize(new Dimension(2*WIDTH/3,buttonHeight/3));
+		addPanel.add(addLabel);
 		addTextField = new JTextField();
-		addTextField.setPreferredSize(new Dimension(2*WIDTH/3,buttonHeight));
-		optionsPanel.add(addTextField);
+		addTextField.setPreferredSize(new Dimension(2*WIDTH/3,buttonHeight/2));
+		addPanel.add(addTextField);
+		optionsPanel.add(addPanel);
 		hiddenLayerField = new JTextField();
-		hiddenLayerField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		hiddenLayerField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
+		hiddenLayerLabel = new JLabel("Hidden Layer #:");
+		hiddenLayerLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
+		optionsPanel.add(hiddenLayerLabel);
+		learningRateLabel = new JLabel("Learning Rate:");
+		learningRateLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
+		optionsPanel.add(learningRateLabel);
+		momentumLabel = new JLabel("Momentum:");
+		momentumLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
+		optionsPanel.add(momentumLabel);
+		errorToleranceLabel = new JLabel("Error Tolerance:");
+		errorToleranceLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
+		optionsPanel.add(errorToleranceLabel);
 		optionsPanel.add(hiddenLayerField);
 		learningRateField = new JTextField();
-		learningRateField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		learningRateField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(learningRateField);
 		momentumField = new JTextField();
-		momentumField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		momentumField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(momentumField);
 		errorToleranceField = new JTextField();
-		errorToleranceField.setPreferredSize(new Dimension(width/4,buttonHeight));
+		errorToleranceField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(errorToleranceField);
 		
 		framePanel.add(optionsPanel);
@@ -137,3 +161,4 @@ public class PatternRecognitionFrame extends JFrame {
 	}
 	
 }
+
