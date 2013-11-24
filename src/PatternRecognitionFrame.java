@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -14,26 +15,32 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicProgressBarUI;
 
 
 public class PatternRecognitionFrame extends JFrame {
 
 	private Grid grid;
 	private final int WIDTH;
-	private int height;
+	private int HEIGHT;
 	private int buttonHeight;
 	private Map<Grid,String> grids;
-	private Map<JButton,Grid> patterns;
+	private Map<MButton,Grid> patterns;
+	private Color black = Color.BLACK;
+	private Color green = Color.GREEN;
+	private Color white = Color.WHITE;
 	
 	private JPanel framePanel;
 	private JPanel gridPanel;
-	private JButton clearButton;
+	private MButton clearButton;
 	private JPanel tablePanel;
 	private JPanel viewPort;
 	private JScrollPane table;
-	private JButton emptyTableButton;
+	private MButton emptyTableButton;
 	private JPanel optionsPanel;
-	private JButton addButton;
+	private MButton addButton;
 	private JLabel addLabel;
 	private JTextField addTextField;
 	private JPanel addPanel;
@@ -46,31 +53,34 @@ public class PatternRecognitionFrame extends JFrame {
 	private JLabel errorToleranceLabel;
 	private JTextField errorToleranceField;
 	private JProgressBar progressBar;
-	private JButton learnButton;
-	private JButton recognizeButton;
+	private MButton learnButton;
+	private MButton recognizeButton;
 
 	
 	public PatternRecognitionFrame(int width, int height) {
 		WIDTH = width;
-		this.height = height;
+		this.HEIGHT = height;
 		this.buttonHeight = 5*height/9-2*WIDTH/3;
 		
+		this.setTitle("Back Propagation Neural Network - Pattern Recognition Demo");
+		
 		grids = new HashMap<Grid,String>();
-		patterns = new HashMap<JButton,Grid>();
+		patterns = new HashMap<MButton,Grid>();
 		
 		framePanel = new JPanel();
 		framePanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
-		framePanel.setPreferredSize(new Dimension(WIDTH,height-2*width/3+5*buttonHeight - height/100));
+		framePanel.setPreferredSize(new Dimension(WIDTH,HEIGHT-2*width/3+5*buttonHeight - height/100));
 		add(framePanel);
 		
 		tablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
-		tablePanel.setPreferredSize(new Dimension(WIDTH/3,(5*height)/9));
+		tablePanel.setPreferredSize(new Dimension(WIDTH/3,(5*HEIGHT)/9));
 		viewPort = new JPanel();
+		viewPort.setBackground(black);
 		viewPort.setLayout(new BoxLayout(viewPort,BoxLayout.Y_AXIS));
 		table = new JScrollPane(viewPort);
 		table.setPreferredSize(new Dimension(WIDTH/3,2*WIDTH/3));
 		tablePanel.add(table);
-		emptyTableButton = new JButton("Empty Table");
+		emptyTableButton = new MButton("Empty Table");
 		emptyTableButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				viewPort.removeAll();
@@ -83,10 +93,10 @@ public class PatternRecognitionFrame extends JFrame {
 		framePanel.add(tablePanel);
 		
 		gridPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
-		gridPanel.setPreferredSize(new Dimension((int)(2*WIDTH/3),5*height/9));
+		gridPanel.setPreferredSize(new Dimension((int)(2*WIDTH/3),5*HEIGHT/9));
 		grid = new Grid(2*WIDTH/3,7,5);
 		gridPanel.add(grid);
-		clearButton = new JButton("Clear");
+		clearButton = new MButton("Clear");
 		clearButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				grid.clear();
@@ -97,13 +107,14 @@ public class PatternRecognitionFrame extends JFrame {
 		framePanel.add(gridPanel);
 		
 		optionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
+		optionsPanel.setBackground(black);
 		optionsPanel.setPreferredSize(new Dimension(WIDTH,4*buttonHeight));
-		addButton = new JButton("Add");
+		addButton = new MButton("Add");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Grid tempGrid = new Grid(grid);
 				grids.put(tempGrid,addTextField.getText());
-				JButton tableButton = new JButton(addTextField.getText());
+				MButton tableButton = new MButton(addTextField.getText());
 				patterns.put(tableButton,tempGrid);
 				tableButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -121,6 +132,8 @@ public class PatternRecognitionFrame extends JFrame {
 		addPanel = new JPanel();
 		addPanel.setPreferredSize(new Dimension(2*WIDTH/3,buttonHeight));
 		addLabel = new JLabel("Pattern ID:");
+		addPanel.setBackground(black);
+		addLabel.setForeground(green);
 		addLabel.setPreferredSize(new Dimension(2*WIDTH/3,buttonHeight/3));
 		addPanel.add(addLabel);
 		addTextField = new JTextField();
@@ -128,15 +141,19 @@ public class PatternRecognitionFrame extends JFrame {
 		addPanel.add(addTextField);
 		optionsPanel.add(addPanel);
 		hiddenLayerLabel = new JLabel("Hidden Layer #:");
+		hiddenLayerLabel.setForeground(green);
 		hiddenLayerLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
 		optionsPanel.add(hiddenLayerLabel);
 		learningRateLabel = new JLabel("Learning Rate:");
+		learningRateLabel.setForeground(green);
 		learningRateLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
 		optionsPanel.add(learningRateLabel);
 		momentumLabel = new JLabel("Momentum:");
+		momentumLabel.setForeground(green);
 		momentumLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
 		optionsPanel.add(momentumLabel);
 		errorToleranceLabel = new JLabel("Error Tolerance:");
+		errorToleranceLabel.setForeground(green);
 		errorToleranceLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
 		optionsPanel.add(errorToleranceLabel);
 		hiddenLayerField = new JTextField();
@@ -152,11 +169,22 @@ public class PatternRecognitionFrame extends JFrame {
 		errorToleranceField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(errorToleranceField);
 		progressBar = new JProgressBar();
+		progressBar.setBackground(black);
+		progressBar.setForeground(green);
 		progressBar.setPreferredSize(new Dimension(width,buttonHeight));
 		progressBar.setString("Progress...");
 		progressBar.setStringPainted(true);
+		progressBar.setUI(new BasicProgressBarUI() {
+			protected Color getSelectionBackground() {
+				return green;
+			}
+			protected Color getSelectionForeground() {
+				return black;
+			}
+		});
+		progressBar.setValue(progressBar.getMaximum()/4);
 		optionsPanel.add(progressBar);
-		learnButton = new JButton("Learn");
+		learnButton = new MButton("Learn");
 		learnButton.setPreferredSize(new Dimension(width/2,buttonHeight));
 		learnButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -164,7 +192,7 @@ public class PatternRecognitionFrame extends JFrame {
 			}
 		});
 		optionsPanel.add(learnButton);
-		recognizeButton = new JButton("Recognize");
+		recognizeButton = new MButton("Recognize");
 		recognizeButton.setPreferredSize(new Dimension(width/2,buttonHeight));
 		recognizeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -179,10 +207,18 @@ public class PatternRecognitionFrame extends JFrame {
 		pack();
 	}
 	
+	private class MButton extends JButton {
+		public MButton(String text) {
+			super(text);
+			setBackground(Color.BLACK);
+			setForeground(Color.GREEN);
+			setBorder(new LineBorder(Color.WHITE));
+		}
+	}
+	
 	public static void main(String[] args) {
-		PatternRecognitionFrame frame = new PatternRecognitionFrame(600,800);
+		PatternRecognitionFrame frame = new PatternRecognitionFrame(750,1000);
 		frame.setVisible(true);
 	}
 	
 }
-

@@ -76,9 +76,9 @@ public class Grid extends JPanel{
 
 		private boolean pressed;
 		
-		private Color pressedColor = Color.RED;
-		private Color releasedColor = Color.WHITE;
-		private Color borderColor = Color.BLACK;
+		private Color pressedColor = Color.GREEN;
+		private Color releasedColor = Color.BLACK;
+		private Color borderColor = Color.WHITE;
 		private int borderThickness = 1;
 		
 		public Tile() {
@@ -122,3 +122,4 @@ public class Grid extends JPanel{
 		
 	}
 }
+
