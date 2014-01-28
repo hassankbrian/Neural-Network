@@ -1,3 +1,15 @@
+/*
+ * Useful little grid object. Its size is customizable so that's pretty sweet.
+ * 
+ * I would use this again if I were to need a drawing board for swing, since you
+ * you can basically emulate paint or any image editor from this. Here we use it
+ * to draw the symbols we want to represent.
+ *  
+ *  
+ *  
+ * @author Brian Hassan 
+ * @version 1.0 
+ */
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
