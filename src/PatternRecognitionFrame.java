@@ -1,21 +1,36 @@
+/*
+ * Here we instantiate all the swing design for the UI.
+ *
+ * It's quite messy but it is pretty straight-forward if you know swing.
+ * We have the grid which is supplied dimensions and basically determines 
+ * The co-domain of the neural network. We also have textfields for attributes
+ * such as tolerance that will be supplied to the neural network and we will also
+ * have a sidebar with the patterns created. 
+ * 
+ * 
+ *  
+ * @author Brian Hassan 
+ * @version 1.0 
+ */
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-import javax.swing.JLabel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 
@@ -55,6 +70,12 @@ public class PatternRecognitionFrame extends JFrame {
 	private JProgressBar progressBar;
 	private MButton learnButton;
 	private MButton recognizeButton;
+	
+	private BackPropagationNeuralNetwork bpnn;
+	private List<String> patternStringList;
+	private List<Grid> patternGridList;
+	private int[] layerSizes;
+	BackPropagationNeuralNetwork.TransferFunction[] transferFunctions;
 
 	
 	public PatternRecognitionFrame(int width, int height) {
@@ -63,6 +84,9 @@ public class PatternRecognitionFrame extends JFrame {
 		this.buttonHeight = 5*height/9-2*WIDTH/3;
 		
 		this.setTitle("Back Propagation Neural Network - Pattern Recognition Demo");
+		
+		patternStringList = new ArrayList<String>();
+		patternGridList = new ArrayList<Grid>();
 		
 		grids = new HashMap<Grid,String>();
 		patterns = new HashMap<MButton,Grid>();
@@ -86,6 +110,8 @@ public class PatternRecognitionFrame extends JFrame {
 				viewPort.removeAll();
 				viewPort.revalidate();
 				viewPort.repaint();
+				patternStringList.clear();
+				patternGridList.clear();
 			}
 		});
 		emptyTableButton.setPreferredSize(new Dimension(width/3,buttonHeight));
@@ -94,7 +120,7 @@ public class PatternRecognitionFrame extends JFrame {
 		
 		gridPanel = new JPanel(new FlowLayout(FlowLayout.CENTER,0,0));
 		gridPanel.setPreferredSize(new Dimension((int)(2*WIDTH/3),5*HEIGHT/9));
-		grid = new Grid(2*WIDTH/3,7,5);
+		grid = new Grid(2*WIDTH/3,1,2);
 		gridPanel.add(grid);
 		clearButton = new MButton("Clear");
 		clearButton.addActionListener(new ActionListener() {
@@ -115,6 +141,8 @@ public class PatternRecognitionFrame extends JFrame {
 				Grid tempGrid = new Grid(grid);
 				grids.put(tempGrid,addTextField.getText());
 				MButton tableButton = new MButton(addTextField.getText());
+				patternStringList.add(addTextField.getText());
+				patternGridList.add(tempGrid);
 				patterns.put(tableButton,tempGrid);
 				tableButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -122,7 +150,6 @@ public class PatternRecognitionFrame extends JFrame {
 					}
 				});
 				tableButton.setMaximumSize(new Dimension(WIDTH/3-3,buttonHeight/2));
-				tableButton.setMinimumSize(new Dimension(WIDTH/3-3,buttonHeight/2));
 				viewPort.add(tableButton);
 				viewPort.updateUI();
 			}
@@ -156,16 +183,16 @@ public class PatternRecognitionFrame extends JFrame {
 		errorToleranceLabel.setForeground(green);
 		errorToleranceLabel.setPreferredSize(new Dimension(width/4,buttonHeight/3));
 		optionsPanel.add(errorToleranceLabel);
-		hiddenLayerField = new JTextField();
+		hiddenLayerField = new JTextField("4");
 		hiddenLayerField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(hiddenLayerField);
-		learningRateField = new JTextField();
+		learningRateField = new JTextField("0.1");
 		learningRateField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(learningRateField);
-		momentumField = new JTextField();
+		momentumField = new JTextField("0.15");
 		momentumField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(momentumField);
-		errorToleranceField = new JTextField();
+		errorToleranceField = new JTextField("0.00001");
 		errorToleranceField.setPreferredSize(new Dimension(width/4,buttonHeight/2));
 		optionsPanel.add(errorToleranceField);
 		progressBar = new JProgressBar();
@@ -182,13 +209,26 @@ public class PatternRecognitionFrame extends JFrame {
 				return black;
 			}
 		});
-		progressBar.setValue(progressBar.getMaximum()/4);
 		optionsPanel.add(progressBar);
 		learnButton = new MButton("Learn");
 		learnButton.setPreferredSize(new Dimension(width/2,buttonHeight));
 		learnButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO
+				layerSizes = new int[Integer.parseInt(hiddenLayerField.getText())+2];
+				layerSizes[0] = grid.getRows()*grid.getCols();
+				for (int i = 1; i < layerSizes.length-1; i++) {
+					layerSizes[i] = 10;
+				}
+				layerSizes[layerSizes.length-1] = 1;
+				transferFunctions = new BackPropagationNeuralNetwork.TransferFunction[layerSizes.length];
+				transferFunctions[0] = BackPropagationNeuralNetwork.TransferFunction.none;
+				for (int i = 1; i < transferFunctions.length-1; i++) {
+					transferFunctions[i] = BackPropagationNeuralNetwork.TransferFunction.sigmoid;
+				}
+				transferFunctions[transferFunctions.length-1] = BackPropagationNeuralNetwork.TransferFunction.linear;
+				bpnn = new BackPropagationNeuralNetwork(layerSizes, transferFunctions);
+				progressBar.setValue(0);
+				bpnn.learn(patternGridList,Double.parseDouble(learningRateField.getText()),Double.parseDouble(momentumField.getText()),Double.parseDouble(errorToleranceField.getText()), progressBar);
 			}
 		});
 		optionsPanel.add(learnButton);
@@ -196,7 +236,7 @@ public class PatternRecognitionFrame extends JFrame {
 		recognizeButton.setPreferredSize(new Dimension(width/2,buttonHeight));
 		recognizeButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//TODO
+				JOptionPane.showMessageDialog(null,"Pattern Recognized: " + patternStringList.get(bpnn.recognize(grid)));
 			}
 		});
 		optionsPanel.add(recognizeButton);
@@ -217,7 +257,7 @@ public class PatternRecognitionFrame extends JFrame {
 	}
 	
 	public static void main(String[] args) {
-		PatternRecognitionFrame frame = new PatternRecognitionFrame(750,1000);
+		PatternRecognitionFrame frame = new PatternRecognitionFrame(600,800);
 		frame.setVisible(true);
 	}
 	

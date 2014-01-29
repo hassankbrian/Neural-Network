@@ -81,6 +81,18 @@ public class Grid extends JPanel{
 		}	
 	}
 	
+	public int getRows() {
+		return rows;
+	}
+	
+	public int getCols() {
+		return cols;
+	}
+	
+	public boolean isPressedAt(int row, int col) {
+		return tiles[row][col].pressed;
+	}
+	
 	private boolean clicking;
 	private boolean overwriting;
 
@@ -134,4 +146,3 @@ public class Grid extends JPanel{
 		
 	}
 }
-
